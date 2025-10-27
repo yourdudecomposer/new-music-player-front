@@ -1,6 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import { theme } from '../styles/theme';
+import Loader from './Loader';
 
 export interface Track {
   name: string;
@@ -12,6 +13,7 @@ interface TrackListProps {
   currentTrack: Track | null;
   onSelectTrack: (track: Track) => void;
   onDeleteTrack: (filename: string) => void;
+  isLoading?: boolean;
 }
 
 const List = styled.ul`
@@ -69,7 +71,11 @@ const DeleteButton = styled.button`
   }
 `;
 
-const TrackList: React.FC<TrackListProps> = ({ tracks, currentTrack, onSelectTrack, onDeleteTrack }) => {
+const TrackList: React.FC<TrackListProps> = ({ tracks, currentTrack, onSelectTrack, onDeleteTrack, isLoading = false }) => {
+  if (isLoading) {
+    return <Loader />;
+  }
+
   if (tracks.length === 0) {
     return <p>No tracks found. Upload your first song!</p>;
   }

@@ -10,6 +10,10 @@ const UploadContainer = styled.div`
   border-radius: 8px;
 `;
 
+const Title = styled.h3`
+  margin-bottom: ${theme.spacing.medium};
+`;
+
 const UploadButton = styled.button`
   padding: 10px 15px;
   border-radius: 4px;
@@ -84,7 +88,7 @@ const UploadForm: React.FC<UploadFormProps> = ({ onUploadComplete }) => {
 
   return (
     <UploadContainer>
-      <h3>Upload New Track</h3>
+      <Title>Upload New Track</Title>
       <HiddenInput
         type="file"
         ref={fileInputRef}

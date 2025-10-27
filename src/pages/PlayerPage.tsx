@@ -37,6 +37,7 @@ const LogoutButton = styled.button`
 const PlayerPage: React.FC = () => {
   const [tracks, setTracks] = useState<Track[]>([]);
   const [currentTrack, setCurrentTrack] = useState<Track | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   const handleLogout = useCallback(() => {
       localStorage.removeItem('token');
@@ -44,6 +45,7 @@ const PlayerPage: React.FC = () => {
   }, []);
 
   const fetchTracks = useCallback(async () => {
+    setIsLoading(true);
     try {
       const response = await getTracks();
       setTracks(response.data.filter((el: Track) => el.name));
@@ -52,6 +54,8 @@ const PlayerPage: React.FC = () => {
       if (error.response?.status === 401 || error.response?.status === 400) {
           handleLogout();
       }
+    } finally {
+      setIsLoading(false);
     }
   }, [handleLogout]);
 
@@ -64,14 +68,16 @@ const PlayerPage: React.FC = () => {
   };
 
   const handleDeleteTrack = async (filename: string) => {
+    setIsLoading(true);
     try {
       await deleteTrack(filename);
       if (currentTrack?.name === filename) {
         setCurrentTrack(null);
       }
-      fetchTracks();
+      await fetchTracks();
     } catch (error) {
       console.error('Failed to delete track:', error);
+      setIsLoading(false);
     }
   };
 
@@ -101,6 +107,7 @@ const PlayerPage: React.FC = () => {
         currentTrack={currentTrack}
         onSelectTrack={handleSelectTrack}
         onDeleteTrack={handleDeleteTrack}
+        isLoading={isLoading}
       />
       <Player track={currentTrack} onNext={handleNextTrack} onPrev={handlePrevTrack} />
     </PlayerPageContainer>

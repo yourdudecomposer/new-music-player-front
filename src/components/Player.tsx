@@ -111,8 +111,21 @@ const Player: React.FC<PlayerProps> = ({ track, onNext, onPrev }) => {
 
   useEffect(() => {
     if (audioRef.current && track) {
-      audioRef.current.src = track.url;
-      audioRef.current.play().then(() => setIsPlaying(true)).catch(e => console.error("Playback failed", e));
+      // Сохраняем текущий URL
+      const currentUrl = audioRef.current.src;
+      
+      // Проверяем, изменился ли трек или URL
+      if (currentUrl !== track.url) {
+        audioRef.current.src = track.url;
+        audioRef.current.load(); // Принудительная перезагрузка
+        
+        audioRef.current.play()
+          .then(() => setIsPlaying(true))
+          .catch(e => {
+            console.error("Playback failed", e);
+            setIsPlaying(false);
+          });
+      }
     }
   }, [track]);
 
