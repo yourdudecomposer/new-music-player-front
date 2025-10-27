@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import { getTracks, deleteTrack } from '../api';
 import Player from '../components/Player';
 import TrackList, { Track } from '../components/TrackList';
-import UploadForm from '../components/UploadForm';
+import TrackUploadTabs from '../components/TrackUploadTabs';
 import { theme } from '../styles/theme';
 
 const PlayerPageContainer = styled.div`
@@ -101,7 +101,7 @@ const PlayerPage: React.FC = () => {
         <h1>My Music</h1>
         <LogoutButton onClick={handleLogout}>Logout</LogoutButton>
       </Header>
-      <UploadForm onUploadComplete={fetchTracks} />
+      <TrackUploadTabs onUploadComplete={fetchTracks} />
       <TrackList
         tracks={tracks}
         currentTrack={currentTrack}
