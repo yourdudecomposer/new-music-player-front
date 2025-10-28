@@ -123,7 +123,6 @@ const TrackUploadTabs: React.FC<TrackUploadTabsProps> = ({ onUploadComplete }) =
 
   // Состояния для YouTube загрузчика
   const [youtubeUrl, setYoutubeUrl] = useState('');
-  const [customTitle, setCustomTitle] = useState('');
   const [isDownloading, setIsDownloading] = useState(false);
   const [downloadStatus, setDownloadStatus] = useState('');
 
@@ -168,20 +167,14 @@ const TrackUploadTabs: React.FC<TrackUploadTabsProps> = ({ onUploadComplete }) =
       return;
     }
 
-    // Валидация названия трека
-    if (!customTitle.trim()) {
-      alert('Введите название трека');
-      return;
-    }
-
+ 
     setIsDownloading(true);
     setDownloadStatus('Скачиваем и конвертируем видео...');
 
     try {
-      await downloadFromYoutube(youtubeUrl, customTitle);
+      await downloadFromYoutube(youtubeUrl);
       setDownloadStatus('✅ Успешно загружено в плеер!');
       setYoutubeUrl(''); // Очищаем поле
-      setCustomTitle(''); // Очищаем поле названия
       onUploadComplete();
       
       // Очищаем статус через 2 секунды
@@ -232,13 +225,6 @@ const TrackUploadTabs: React.FC<TrackUploadTabsProps> = ({ onUploadComplete }) =
               placeholder="Вставьте ссылку на YouTube видео"
               value={youtubeUrl}
               onChange={(e) => setYoutubeUrl(e.target.value)}
-              disabled={isDownloading}
-            />
-            <YoutubeInput
-              type="text"
-              placeholder="Введите название трека"
-              value={customTitle}
-              onChange={(e) => setCustomTitle(e.target.value)}
               disabled={isDownloading}
             />
             <DownloadButton onClick={handleYoutubeDownload} disabled={isDownloading}>

@@ -33,6 +33,6 @@ export const uploadTrack = (formData: FormData, onUploadProgress: (progressEvent
 
 export const deleteTrack = (filename: string) => api.delete(`/tracks/${filename}`);
 
-export const downloadFromYoutube = (url: string, customTitle: string) => api.post('/tracks/youtube', { url, customTitle });
+export const downloadFromYoutube = (url: string) => api.post('/tracks/youtube', { url });
 
 export default api;
