@@ -63,6 +63,21 @@ const PlayerPage: React.FC = () => {
     fetchTracks();
   }, [fetchTracks]);
 
+  useEffect(() => {
+    const baseTitle = 'My Music';
+    if (!currentTrack) {
+      document.title = baseTitle;
+      return;
+    }
+    const display = currentTrack.name
+      .split('-')
+      .slice(1)
+      .join('-')
+      .replace(/_/g, ' ')
+      .replace(/\.[^./]+$/, '');
+    document.title = `${display} — ${baseTitle}`;
+  }, [currentTrack]);
+
   const handleSelectTrack = (track: Track) => {
     setCurrentTrack(track);
   };
