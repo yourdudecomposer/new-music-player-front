@@ -118,7 +118,7 @@ const LoginPage: React.FC = () => {
         <h2 style={{ textAlign: 'center' }}>Login</h2>
         <Input
           type="text"
-          placeholder="Username (user1 or user2)"
+          placeholder="Username"
           value={username}
           onChange={(e) => setUsername(e.target.value)}
           required
@@ -126,7 +126,7 @@ const LoginPage: React.FC = () => {
         <PasswordWrapper>
           <PasswordInput
             type={showPassword ? "text" : "password"}
-            placeholder="Password (password123)"
+            placeholder="Password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required

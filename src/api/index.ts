@@ -35,4 +35,7 @@ export const deleteTrack = (filename: string) => api.delete(`/tracks/${filename}
 
 export const downloadFromYoutube = (url: string) => api.post('/tracks/youtube', { url });
 
+export const renameTrack = (oldFilename: string, newName: string) =>
+  api.patch(`/tracks/${encodeURIComponent(oldFilename)}/rename`, { newName });
+
 export default api;

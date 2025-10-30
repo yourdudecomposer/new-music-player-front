@@ -13,6 +13,7 @@ interface TrackListProps {
   currentTrack: Track | null;
   onSelectTrack: (track: Track) => void;
   onDeleteTrack: (filename: string) => void;
+  onRenameTrack: (oldFilename: string, newName: string) => void;
   isLoading?: boolean;
 }
 
@@ -57,7 +58,45 @@ const TrackName = styled.span`
   margin-right: 1rem;
 `;
 
-const DeleteButton = styled.button`
+const ModalBackdrop = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+`;
+
+const ModalBody = styled.div`
+  background: ${theme.colors.background};
+  border: 1px solid #333;
+  border-radius: 8px;
+  padding: ${theme.spacing.large};
+  width: 90%;
+  max-width: 420px;
+`;
+
+const ModalActions = styled.div`
+  display: flex;
+  justify-content: flex-end;
+  gap: ${theme.spacing.medium};
+  margin-top: ${theme.spacing.medium};
+`;
+
+const Input = styled.input`
+  width: 100%;
+  padding: 8px 10px;
+  border-radius: 4px;
+  border: 1px solid #444;
+  color: ${theme.colors.text};
+  background: ${theme.colors.surface};
+`;
+
+const IconButton = styled.button`
   background: none;
   border: none;
   color: ${theme.colors.textSecondary};
@@ -67,11 +106,38 @@ const DeleteButton = styled.button`
   line-height: 1;
 
   &:hover {
-    color: ${theme.colors.error};
+    color: ${theme.colors.primary};
   }
 `;
 
-const TrackList: React.FC<TrackListProps> = ({ tracks, currentTrack, onSelectTrack, onDeleteTrack, isLoading = false }) => {
+const TrackList: React.FC<TrackListProps> = ({ tracks, currentTrack, onSelectTrack, onDeleteTrack, onRenameTrack, isLoading = false }) => {
+  const [renaming, setRenaming] = React.useState<Track | null>(null);
+  const [newName, setNewName] = React.useState('');
+  const [deleting, setDeleting] = React.useState<Track | null>(null);
+
+  const getDisplayName = (fullName: string) => fullName.split('-').slice(1).join('-').replace(/_/g, ' ').replace(/\.[^./]+$/, '');
+  const openRename = (track: Track) => {
+    setRenaming(track);
+    setNewName(getDisplayName(track.name));
+  };
+  const closeRename = () => {
+    setRenaming(null);
+    setNewName('');
+  };
+  const confirmRename = () => {
+    if (!renaming) return;
+    const value = newName.trim();
+    if (!value) return;
+    onRenameTrack(renaming.name, value);
+    closeRename();
+  };
+  const openDelete = (track: Track) => setDeleting(track);
+  const closeDelete = () => setDeleting(null);
+  const confirmDelete = () => {
+    if (!deleting) return;
+    onDeleteTrack(deleting.name);
+    closeDelete();
+  };
   if (isLoading) {
     return <Loader />;
   }
@@ -81,6 +147,7 @@ const TrackList: React.FC<TrackListProps> = ({ tracks, currentTrack, onSelectTra
   }
 
   return (
+    <>
     <List>
       {tracks.map((track) => (
         <ListItem
@@ -88,19 +155,60 @@ const TrackList: React.FC<TrackListProps> = ({ tracks, currentTrack, onSelectTra
           isActive={currentTrack?.name === track.name}
         >
           <TrackName onClick={() => onSelectTrack(track)}>{track.name.split('-').slice(1).join('-').replace(/_/g, ' ')}</TrackName>
-          <DeleteButton
+          <IconButton
+            title="Rename"
+            onClick={(e) => {
+              e.stopPropagation();
+              openRename(track);
+            }}
+          >
+            ✏️
+          </IconButton>
+          <IconButton
             onClick={(e) => {
               e.stopPropagation(); // Предотвращаем проигрывание при клике на удаление
-              if (window.confirm(`Are you sure you want to delete ${track.name}?`)) {
-                onDeleteTrack(track.name);
-              }
+              openDelete(track);
             }}
           >
             🗑️
-          </DeleteButton>
+          </IconButton>
         </ListItem>
       ))}
     </List>
+    {renaming && (
+      <ModalBackdrop onClick={closeRename}>
+        <ModalBody onClick={(e) => e.stopPropagation()}>
+          <h3>Rename track</h3>
+          <Input
+            autoFocus
+            value={newName}
+            onChange={(e) => setNewName(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') confirmRename();
+              if (e.key === 'Escape') closeRename();
+            }}
+            placeholder="New name (without extension)"
+          />
+          <ModalActions>
+            <IconButton onClick={closeRename}>Cancel</IconButton>
+            <IconButton onClick={confirmRename}>Save</IconButton>
+          </ModalActions>
+        </ModalBody>
+      </ModalBackdrop>
+    )}
+    {deleting && (
+      <ModalBackdrop onClick={closeDelete}>
+        <ModalBody onClick={(e) => e.stopPropagation()}>
+          <h3>Delete track</h3>
+          <p>Are you sure you want to delete {deleting.name.split('-').slice(1).join('-').replace(/_/g, ' ')}?</p>
+          <ModalActions>
+            <IconButton onClick={closeDelete}>Cancel</IconButton>
+            <IconButton onClick={confirmDelete}>Delete</IconButton>
+          </ModalActions>
+        </ModalBody>
+      </ModalBackdrop>
+    )}
+    </>
   );
 };
 

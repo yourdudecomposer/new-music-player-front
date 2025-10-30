@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import styled from 'styled-components';
-import { getTracks, deleteTrack } from '../api';
+import { getTracks, deleteTrack, renameTrack } from '../api';
 import Player from '../components/Player';
 import TrackList, { Track } from '../components/TrackList';
 import TrackUploadTabs from '../components/TrackUploadTabs';
@@ -81,6 +81,23 @@ const PlayerPage: React.FC = () => {
     }
   };
 
+  const handleRenameTrack = async (oldFilename: string, newName: string) => {
+    setIsLoading(true);
+    try {
+      await renameTrack(oldFilename, newName);
+      // Обновляем список и пробуем выбрать переименованный трек по отображаемому имени
+      await fetchTracks();
+      if (currentTrack?.name === oldFilename) {
+        const stripDisplay = (full: string) => full.split('-').slice(1).join('-').replace(/_/g, ' ').replace(/\.[^./]+$/, '');
+        const updated = tracks.find(t => stripDisplay(t.name) === newName);
+        setCurrentTrack(updated || null);
+      }
+    } catch (error) {
+      console.error('Failed to rename track:', error);
+      setIsLoading(false);
+    }
+  };
+
   const handleNextTrack = () => {
     if (!currentTrack || tracks.length === 0) return;
     const currentIndex = tracks.findIndex(t => t.name === currentTrack.name);
@@ -107,6 +124,7 @@ const PlayerPage: React.FC = () => {
         currentTrack={currentTrack}
         onSelectTrack={handleSelectTrack}
         onDeleteTrack={handleDeleteTrack}
+        onRenameTrack={handleRenameTrack}
         isLoading={isLoading}
       />
       <Player track={currentTrack} onNext={handleNextTrack} onPrev={handlePrevTrack} />
