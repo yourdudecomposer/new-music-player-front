@@ -103,8 +103,9 @@ const LoginPage: React.FC = () => {
     e.preventDefault();
     setError('');
     try {
-      const response = await login(username, password);
+      const response = await login(username, password);      
       localStorage.setItem('token', response.data.token);
+      localStorage.setItem('refreshToken', response.data.refreshToken);
       window.location.href = '/'; // Перезагружаем страницу для перехода на плеер
     } catch (err) {
       setError('Invalid username or password');

@@ -41,6 +41,7 @@ const PlayerPage: React.FC = () => {
 
   const handleLogout = useCallback(() => {
       localStorage.removeItem('token');
+      localStorage.removeItem('refreshToken');
       window.location.href = '/login';
   }, []);
 
@@ -51,13 +52,11 @@ const PlayerPage: React.FC = () => {
       setTracks(response.data.filter((el: Track) => el.name));
     } catch (error: any) {
       console.error('Failed to fetch tracks:', error);
-      if (error.response?.status === 401 || error.response?.status === 400) {
-          handleLogout();
-      }
+      // Logout будет обработан axios interceptor автоматически
     } finally {
       setIsLoading(false);
     }
-  }, [handleLogout]);
+  }, []);
 
   useEffect(() => {
     fetchTracks();

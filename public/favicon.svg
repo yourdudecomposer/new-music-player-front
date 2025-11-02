@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- Круглый фон -->
+  <circle cx="50" cy="50" r="48" fill="#1DB954"/>
+  
+  <!-- Музыкальная нота -->
+  <path d="M35 65 L35 30 L65 25 L65 50" stroke="white" stroke-width="8" fill="none" stroke-linecap="round"/>
+  <circle cx="61" cy="50" r="8" fill="white"/>
+  <circle cx="31" cy="65" r="8" fill="white"/>
+</svg>
+
